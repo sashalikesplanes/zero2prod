@@ -1,0 +1,27 @@
+#!/bin/bash
+set -eu
+export CARGO_TERM_COLOR=always
+
+if result=$(cargo test 2>&1); then
+    echo "✅tests passed"
+else
+    echo "❌tests failed"
+    echo "$result"
+    exit 1
+fi
+
+if result=$(cargo fmt 2>&1); then
+    echo "✅format passed"
+else
+    echo "❌format failed"
+    echo "$result"
+    exit 1
+fi
+
+if result=$(cargo clippy -- -D warnings 2>&1); then
+    echo "✅clippy passed"
+else
+    echo "❌clippy failed"
+    echo "$result"
+    exit 1
+fi
