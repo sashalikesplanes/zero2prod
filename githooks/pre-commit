@@ -10,7 +10,7 @@ else
     exit 1
 fi
 
-if result=$(cargo fmt -- --emit files 2>&1); then
+if result=$(cargo fmt -- --check 2>&1); then
     echo "✅format passed"
 else
     echo "❌format failed"
