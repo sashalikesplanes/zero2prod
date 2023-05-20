@@ -1,20 +1,18 @@
-use actix_web::{web, App, HttpResponse, HttpServer, Responder, dev::Server};
-
-pub const URL: &str = "127.0.0.1:8080";
+use actix_web::{dev::Server, web, App, HttpResponse, HttpServer, Responder};
 
 async fn health_check() -> impl Responder {
     HttpResponse::Ok()
 }
 
-pub fn setup_server() -> Result<Server, std::io::Error> {
+pub fn setup_server(socket_address: impl std::net::ToSocketAddrs) -> Result<Server, std::io::Error> {
     let server = HttpServer::new(|| {
         // Order in which routes are registered matters!
         App::new().route("/health_check", web::get().to(health_check))
     })
-    .bind(URL)?
+    .bind(socket_address)?
     .run();
 
-    println!("Server listening on {URL}");
+    println!("Server listening");
 
     Ok(server)
 }
