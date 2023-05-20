@@ -12,6 +12,6 @@ mod tests {
 
     #[test]
     fn test_my_name() {
-        assert_eq!(my_name(), "Sasha");
+        assert_eq!(my_name(), "Bob");
     }
 }
