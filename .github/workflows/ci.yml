@@ -20,8 +20,6 @@ jobs:
       image: postgres
       env:
         POSTGRES_PASSWORD: password
-      ports:
-        - 5432:5432
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
