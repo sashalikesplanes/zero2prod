@@ -18,8 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     services:
       image: postgres
-      env:
-        POSTGRES_PASSWORD: password
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
