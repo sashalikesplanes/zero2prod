@@ -25,3 +25,11 @@ else
     echo "$result"
     exit 1
 fi
+
+if result=$(cargo sqlx prepare --check 2>&1); then
+    echo "✅sqlx offline synced"
+else
+    echo "❌sqlx offline out of sync"
+    echo "$result"
+    exit 1
+fi
