@@ -1,4 +1,6 @@
 use serde;
+use serde_aux::field_attributes::deserialize_number_from_string;
+use sqlx::postgres::{PgConnectOptions, PgSslMode};
 
 #[derive(serde::Deserialize)]
 pub struct Settings {
@@ -8,6 +10,7 @@ pub struct Settings {
 
 #[derive(serde::Deserialize)]
 pub struct AppSettings {
+    #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
     pub host: String,
 }
@@ -16,24 +19,30 @@ pub struct AppSettings {
 pub struct DatabaseSettings {
     pub username: String,
     pub password: String,
+    #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
     pub host: String,
     pub name: String,
+    pub require_ssl: bool,
 }
 
 impl DatabaseSettings {
-    pub fn connection_string(&self) -> String {
-        format!(
-            "postgres://{}:{}@{}:{}/{}",
-            self.username, self.password, self.host, self.port, self.name
-        )
+    pub fn without_db(&self) -> PgConnectOptions {
+        let ssl_mode = if self.require_ssl {
+            PgSslMode::Require
+        } else {
+            PgSslMode::Prefer
+        };
+        PgConnectOptions::new()
+            .host(&self.host)
+            .port(self.port)
+            .username(&self.username)
+            .password(&self.password)
+            .ssl_mode(ssl_mode)
     }
 
-    pub fn connection_string_without_db(&self) -> String {
-        format!(
-            "postgres://{}:{}@{}:{}",
-            self.username, self.password, self.host, self.port
-        )
+    pub fn with_db(&self) -> PgConnectOptions {
+        self.without_db().database(&self.name)
     }
 }
 
@@ -85,8 +94,8 @@ pub fn get_configuration() -> Result<Settings, config::ConfigError> {
         // will override previously set ones
         .add_source(
             config::Environment::with_prefix("APP")
-                .prefix_separator("_")
-                .separator("-"),
+                .prefix_separator("__")
+                .separator("_"),
         )
         .build()?;
 

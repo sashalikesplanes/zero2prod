@@ -2,6 +2,22 @@ name: zero2prod
 region: ams3
 services:
   - name: zero2prod
+    envs:
+      - key: APP__DATABASE_USERNAME
+        scope: RUN_TIME
+        value: ${newsletter.USERNAME}
+      - key: APP__DATABASE_PASSWORD
+        scope: RUN_TIME
+        value: ${newsletter.PASSWORD}
+      - key: APP__DATABASE_HOST
+        scope: RUN_TIME
+        value: ${newsletter.HOSTNAME}
+      - key: APP__DATABASE_PORT
+        scope: RUN_TIME
+        value: ${newsletter.PORT}
+      - key: APP__DATABASE_NAME
+        scope: RUN_TIME
+        value: ${newsletter.DATABASE}
     dockerfile_path: Dockerfile
     source_dir: .
     github:

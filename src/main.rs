@@ -10,8 +10,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
     let configuration = get_configuration().expect("Failed to read config.");
-    let pool = PgPool::connect_lazy(&configuration.database.connection_string())
-        .expect("Failed to connect to Postgres");
+    let pool = PgPool::connect_lazy_with(configuration.database.with_db());
     let listener = TcpListener::bind((configuration.app.host, configuration.app.port))
         .expect("Listener should have bound to {PORT}");
     log::info!("Starting up");
