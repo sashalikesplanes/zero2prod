@@ -96,7 +96,7 @@ struct TestApp {
 /// And return its address
 async fn spawn_app() -> TestApp {
     let mut configuration = get_configuration().expect("Failed to read config");
-    configuration.database.database_name = uuid::Uuid::new_v4().to_string();
+    configuration.database.name = uuid::Uuid::new_v4().to_string();
     // Create a bound listener
     let listener = TcpListener::bind((URL, 0)).expect("Listener should have bouund to random port");
     let address = &listener
@@ -118,7 +118,7 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
         .await
         .expect("Failed to connect to db");
     connection
-        .execute(format!(r#"CREATE DATABASE "{}";"#, config.database_name).as_str())
+        .execute(format!(r#"CREATE DATABASE "{}";"#, config.name).as_str())
         .await
         .expect("Failed to create DB");
 

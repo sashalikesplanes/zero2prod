@@ -18,14 +18,14 @@ pub struct DatabaseSettings {
     pub password: String,
     pub port: u16,
     pub host: String,
-    pub database_name: String,
+    pub name: String,
 }
 
 impl DatabaseSettings {
     pub fn connection_string(&self) -> String {
         format!(
             "postgres://{}:{}@{}:{}/{}",
-            self.username, self.password, self.host, self.port, self.database_name
+            self.username, self.password, self.host, self.port, self.name
         )
     }
 
@@ -77,9 +77,17 @@ pub fn get_configuration() -> Result<Settings, config::ConfigError> {
     let env_filename = format!("{}.yaml", env.as_str());
 
     let settings = config::Config::builder()
-        // Add a file into it (it will search for any file it can parse called configuration)
+        // Shared config
         .add_source(config::File::from(config_dir.join("base.yaml")))
+        // Environment specific config
         .add_source(config::File::from(config_dir.join(env_filename)))
+        // Configs from env (prefixed with `APP_` and using `-` as separator)
+        // will override previously set ones
+        .add_source(
+            config::Environment::with_prefix("APP")
+                .prefix_separator("_")
+                .separator("-"),
+        )
         .build()?;
 
     settings.try_deserialize()
