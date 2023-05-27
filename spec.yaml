@@ -6,7 +6,7 @@ services:
     source_dir: .
     github:
       branch: main
-      deploy_on_push: false
+      deploy_on_push: true
       repo: sashalikesplanes/zero2prod
     health_check:
       http_path: /health_check

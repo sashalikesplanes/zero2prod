@@ -1,7 +1,7 @@
 # Prepare the base image
 FROM lukemathwalker/cargo-chef:latest-rust-1.69.0 as chef
 WORKDIR /app
-RUN apt update && apt install lld clang -y # lld needed as we selected alternative linker
+RUN apt-get update && apt-get install lld clang -y # lld needed as we selected alternative linker
 
 
 # Compute the lock-file for the project
