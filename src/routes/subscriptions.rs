@@ -23,7 +23,13 @@ pub async fn subscribe(form: web::Form<SubscribeData>, pool: web::Data<PgPool>) 
     .execute(pool.get_ref())
     .await
     {
-        Ok(_) => HttpResponse::Ok(),
-        Err(_) => HttpResponse::InternalServerError(),
+        Ok(_) => {
+            log::info!("New subscriber details saved");
+            HttpResponse::Ok()
+        }
+        Err(e) => {
+            log::error!("Subscriber details failed to be saved, {:?}", e);
+            HttpResponse::InternalServerError()
+        }
     }
 }

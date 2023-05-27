@@ -1,5 +1,5 @@
 use crate::routes::{health_check, subscribe};
-use actix_web::{dev::Server, web, App, HttpServer};
+use actix_web::{dev::Server, web, App, HttpServer, middleware::Logger};
 use sqlx::PgPool;
 use std::net::TcpListener;
 
@@ -9,6 +9,7 @@ pub fn setup_server(listener: TcpListener, pool: PgPool) -> Result<Server, std::
     let server = HttpServer::new(move || {
         // Order in which routes are registered matters!
         App::new()
+            .wrap(Logger::default())
             .service(health_check)
             .service(subscribe)
             .app_data(connection.clone())
