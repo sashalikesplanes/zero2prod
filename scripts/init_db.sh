@@ -40,6 +40,7 @@ then
 fi
 
 >&2 echo "Postgres is up and running on port ${DB_PORT} - running migrations..."
+echo "With user: ${DB_USER} and password ${DB_PASSWORD}"
 
 export DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@127.0.0.1:${DB_PORT}/${DB_NAME}
 sqlx database create
