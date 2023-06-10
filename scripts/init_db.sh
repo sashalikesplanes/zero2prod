@@ -39,13 +39,6 @@ then
     # ^ Increased maximum number of connections for testing purposes
 fi
 
-# Keep pinging postgres until it is ready
-export PGPASSWORD="${DB_PASSWORD}"
-until psql -h "localhost" -U ${DB_USER} -p "${DB_PORT}" -d "postgres" -c '\q'; do
-  >&2 echo "Postgres is still unavailable - sleeping"
-  sleep 1
-done
-
 >&2 echo "Postgres is up and running on port ${DB_PORT} - running migrations..."
 
 export DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@127.0.0.1:${DB_PORT}/${DB_NAME}
