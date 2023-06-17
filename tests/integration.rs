@@ -1,9 +1,11 @@
+use once_cell::sync::Lazy;
 use reqwest::StatusCode;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
 use zero2prod::{
     configuration::{get_configuration, DatabaseSettings},
     startup,
+    telemetry::{get_subscriber, init_subscriber},
 };
 
 const URL: &str = "127.0.0.1";
@@ -87,6 +89,12 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     }
 }
 
+// Ensure out tracing stack is initialized only once using once_cell
+static TRACING: Lazy<()> = Lazy::new(|| {
+    let subscriber = get_subscriber("test".into(), "debug".into());
+    init_subscriber(subscriber);
+});
+
 struct TestApp {
     pub address: String,
     pub pool: PgPool,
@@ -95,6 +103,8 @@ struct TestApp {
 /// Spin up an instance of the application at a random port
 /// And return its address
 async fn spawn_app() -> TestApp {
+    Lazy::force(&TRACING);
+
     let mut configuration = get_configuration().expect("Failed to read config");
     configuration.database.name = uuid::Uuid::new_v4().to_string();
     // Create a bound listener
